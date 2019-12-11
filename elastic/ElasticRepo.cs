@@ -9,7 +9,7 @@ namespace elastic.Controllers
 {
     public class ElasticRepo : IElastic
     {
-        public ElasticClient elasticClients;
+        private readonly ElasticClient _elasticClients;
         public ElasticRepo()
         {
             //Connection string for Elasticsearch
@@ -26,7 +26,7 @@ namespace elastic.Controllers
 
             var connectionPool = new StaticConnectionPool(nodes);
             var connectionSettings = new ConnectionSettings(connectionPool);
-            elasticClients = new ElasticClient(connectionSettings);
+            _elasticClients = new ElasticClient(connectionSettings);
         }
         public void Dispose()
         {
@@ -41,7 +41,7 @@ namespace elastic.Controllers
                 Age = new Random().Next(0, 100),
                 Name = "jasim loay"
             };
-            var response =  elasticClients.Index(user,
+            var response =  _elasticClients.Index(user,
                 i => i.Index("users").Refresh(Refresh.True)
                     .Id(new Id(Guid.NewGuid().ToString()))); 
             return response;
@@ -49,14 +49,14 @@ namespace elastic.Controllers
 
         public List<WeatherForecastController.User> Search()
         {
-            return elasticClients.Search<WeatherForecastController.User>(s => s
+            return _elasticClients.Search<WeatherForecastController.User>(s => s
                 .Index("users")
                 .Query(q => q.Term(x => x.Field("age").Value(3)))).Documents.ToList();
         }
 
         public UpdateResponse<WeatherForecastController.User> Update()
         {
-            var response = elasticClients.Update<WeatherForecastController.User, WeatherForecastController.User>("4df1cffc-2e9c-418d-8ad8-ca649bbe008b", d => d
+            var response = _elasticClients.Update<WeatherForecastController.User, WeatherForecastController.User>("4df1cffc-2e9c-418d-8ad8-ca649bbe008b", d => d
                 .Index("users")
                 .Doc(new WeatherForecastController.User
                 {
@@ -72,7 +72,7 @@ namespace elastic.Controllers
 
         public DeleteResponse Delete()
         {
-            var response = elasticClients.Delete<WeatherForecastController.User>(
+            var response = _elasticClients.Delete<WeatherForecastController.User>(
                 "4df1cffc-2e9c-418d-8ad8-ca649bbe008b",
                 d => d.Index("users"));
             return response;

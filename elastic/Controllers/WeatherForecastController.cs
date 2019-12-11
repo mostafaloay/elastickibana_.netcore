@@ -26,8 +26,8 @@ namespace elastic.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            var response = _elastic.Add();
-            return Ok(response.Id);
+            //var response = _elastic.Add();
+            return Ok();
         }
         public class User
         {

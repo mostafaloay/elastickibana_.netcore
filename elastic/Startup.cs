@@ -1,5 +1,6 @@
 using System;
 using elastic.Controllers;
+using Elasticsearch.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,8 @@ namespace elastic
         public Startup(IConfiguration configuration)
         {
             // Create Serilog Elasticsearch logger
-            
+            var credentials = new BasicAuthenticationCredentials("elastic", "qzKU7qkbpjEJMyzN5gBOIyl0");
+            var pool = new CloudConnectionPool("test:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDljNWJkOGNhNWYzZjQ5YjBhOGRkMDRlYTVlYzc0OWRiJDM3NmUxNzlmZWM0NDQyNWQ4N2RlYjBkZGEzODhlNGMz", credentials);
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()
