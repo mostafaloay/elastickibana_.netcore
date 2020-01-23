@@ -1,4 +1,6 @@
 using System;
+using Elastic.Apm.AspNetCore;
+using Elastic.Apm.NetCoreAll;
 using elastic.Controllers;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Builder;
@@ -22,6 +24,7 @@ namespace elastic
             // Create Serilog Elasticsearch logger
             var credentials = new BasicAuthenticationCredentials("elastic", "qzKU7qkbpjEJMyzN5gBOIyl0");
             var pool = new CloudConnectionPool("test:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDljNWJkOGNhNWYzZjQ5YjBhOGRkMDRlYTVlYzc0OWRiJDM3NmUxNzlmZWM0NDQyNWQ4N2RlYjBkZGEzODhlNGMz", credentials);
+
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()
@@ -41,7 +44,7 @@ namespace elastic
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ////
+            //// add main logging  and serilog
             services.AddLogging(loggingBuilder =>
             {
                 loggingBuilder.AddSerilog(dispose: true);
@@ -58,6 +61,7 @@ namespace elastic
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAllElasticApm(Configuration);
 
             if (env.IsDevelopment())
             {

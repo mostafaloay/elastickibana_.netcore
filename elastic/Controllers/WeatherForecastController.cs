@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Mvc;
@@ -24,10 +25,16 @@ namespace elastic.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> Get()
+        public async Task<ActionResult<string>> Get()
         {
             //var response = _elastic.Add();
-            return Ok();
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "APM-Sample-App");
+            //This HTTP request is automatically captured by the Elastic APM .NET Agent:
+            var responseMsg = await httpClient
+                .GetAsync("https://api.github.com/repos/elastic/apm-agent-dotnet");
+            var responseStr = await responseMsg.Content.ReadAsStringAsync();
+            return Ok(responseStr);
         }
         public class User
         {
